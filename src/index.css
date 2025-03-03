@@ -240,3 +240,199 @@ html {
     scrollbar-width: none;  /* Firefox */
   }
 }
+
+/**
+ * Safari-specific optimizations
+ */
+
+/* More efficient backdrop blur for Safari */
+@supports (-webkit-backdrop-filter: none) {
+  .backdrop-blur-md {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transform: translateZ(0); /* Force GPU acceleration in Safari */
+  }
+
+  .backdrop-blur-sm {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    transform: translateZ(0);
+  }
+
+  /* Reduce blur intensity in Safari for better performance */
+  .blur-panel,
+  .content-panel {
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+
+  /* Lighter blur for mobile Safari */
+  @media (max-width: 767px) {
+    .backdrop-blur-md,
+    .backdrop-blur-sm,
+    .blur-panel,
+    .content-panel {
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+    }
+  }
+}
+
+/* Safari-specific fixes for drop shadows */
+@supports (-webkit-backdrop-filter: none) {
+  .drop-shadow,
+  .drop-shadow-lg,
+  .enhanced-text,
+  .enhanced-text-subtle {
+    transform: translateZ(0); /* Improve shadow rendering in Safari */
+  }
+
+  /* Simplify heavy text shadows in Safari */
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose strong {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    transform: translateZ(0);
+  }
+}
+
+/* Prevent Safari rendering issues with fixed elements */
+.fixed {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Improve Safari scroll performance */
+.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safari-specific memory leak prevention */
+@media not all and (min-resolution: 0.001dpcm) {
+  @supports (-webkit-appearance: none) {
+    /* Safari only styles */
+    img,
+    video {
+      will-change: auto !important; /* Reset will-change for better Safari memory usage */
+    }
+
+    /* Reduce compositing layers in Safari */
+    .hover\:scale-\[1\.01\],
+    .hover\:scale-105 {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+
+    /* Optimize transitions for Safari */
+    .transition-all,
+    .transition-transform,
+    .transition-colors,
+    .transition-opacity {
+      -webkit-transform-style: preserve-3d;
+      transform-style: preserve-3d;
+    }
+
+    /* Optimized fixed elements to prevent jittering in Safari */
+    .sticky {
+      position: -webkit-sticky;
+      z-index: 1;
+    }
+
+    /* Reduce animation complexity in Safari */
+    .animate-accordion-up,
+    .animate-accordion-down {
+      animation-duration: 0.15s;
+    }
+  }
+}
+
+/* Specific optimizations for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari only */
+  html,
+  body {
+    /* Prevent elastic scrolling on iOS */
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Make main content scrollable */
+  .min-h-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Fix touch highlights */
+  * {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+
+  /* Fix iOS Safari font rendering */
+  .font-serif {
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Fallback for backdrop-filter for older browsers */
+@supports not (backdrop-filter: blur(4px)) and
+         not (-webkit-backdrop-filter: blur(4px)) {
+  .backdrop-blur-md,
+  .backdrop-blur-sm,
+  .blur-panel,
+  .content-panel {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* Performance optimizations for low-end devices */
+.safari.low-memory .backdrop-blur-md,
+.safari.low-memory .backdrop-blur-sm,
+.safari.low-memory .blur-panel,
+.safari.low-memory .content-panel {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Faster transition for mobile Safari */
+.safari .transition-all {
+  transition-duration: 0.2s !important;
+}
+
+/* Force hardware acceleration for complex elements in Safari */
+.safari .bg-fixed,
+.safari .backdrop-blur-md,
+.safari .sticky,
+.safari .fixed {
+  transform: translateZ(0);
+}
+
+/* Content panels - original styling from page-layout.css */
+.content-panel {
+  background-color: rgba(26, 31, 44, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(42, 47, 60, 0.5);
+  border-radius: 0.5rem;
+  padding: 2rem;
+}
+
+.prose-panel {
+  background-color: rgba(26, 31, 44, 0.95);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(42, 47, 60, 0.5);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
