@@ -4,6 +4,12 @@ import { HeroButtons } from "@/components/hero/HeroButtons";
 import { FeaturedWorkSection } from "@/components/sections/FeaturedWorkSection";
 import { PageLayout } from "@/components/PageLayout";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
+import { navigationService } from "@/utils/navigationService";
+
+const NavigationIndicator = () => (
+  <div className="navigation-indicator"></div>
+);
 
 const BlurPanel = ({
   children,
@@ -30,8 +36,25 @@ const BlurPanel = ({
 };
 
 const Index = () => {
+  // Clean up any navigation state on component mount
+  useEffect(() => {
+    navigationService.cleanupAfterNavigation();
+
+    // Add navigation event listener for detecting back/forward navigation
+    const handlePopState = () => {
+      navigationService.cleanupAfterNavigation();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   return (
     <PageLayout>
+      <NavigationIndicator />
       <main className="container mx-auto px-4 py-16 flex-grow">
         <div className="text-center mb-24">
           <BlurPanel className="p-8 sm:p-12 mb-16 max-w-5xl mx-auto">

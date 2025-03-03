@@ -46,6 +46,9 @@ html {
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Global transition duration variable */
+    --global-transition-duration: 0.3s;
   }
 
   .dark {
@@ -435,4 +438,142 @@ html {
   border-radius: 0.5rem;
   padding: 2rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/**
+ * Navigation-specific fixes for Safari
+ */
+
+/* Styles for when navigation is in progress */
+html.navigating {
+  /* Disable all animations and transitions during navigation */
+  --global-transition-duration: 0s !important;
+}
+
+html.navigating * {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-delay: 0s !important;
+  animation-iteration-count: 0 !important;
+}
+
+/* Disable backdrop filters during navigation to prevent Safari freezing */
+html.navigating .backdrop-blur-md,
+html.navigating .backdrop-blur-sm,
+html.navigating .blur-panel,
+html.navigating .content-panel {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Fix for Safari rendering during navigation */
+html.navigating .fixed,
+html.navigating .sticky {
+  transform: none !important;
+  -webkit-transform: none !important;
+}
+
+/* Disable hover effects during navigation */
+html.navigating .hover\:scale-\[1\.01\]:hover,
+html.navigating .hover\:scale-105:hover,
+html.navigating .group-hover\:scale-105,
+html.navigating .group:hover .group-hover\:scale-105 {
+  transform: none !important;
+  -webkit-transform: none !important;
+}
+
+/* Optimize for Safari by disabling the elastic scroll effect during navigation */
+@supports (-webkit-touch-callout: none) {
+  html.navigating * {
+    /* Disable all potentially expensive CSS properties */
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+
+  /* Make sure fixed elements don't cause problems during navigation */
+  html.navigating .fixed {
+    position: absolute !important;
+  }
+}
+
+/* Specific fix for buttons in Safari during navigation */
+.safari button:active,
+.safari [role="button"]:active {
+  transform: none !important;
+  -webkit-transform: none !important;
+  opacity: 0.7;
+}
+
+/* Navigation indicator that shows when page is transitioning */
+.navigation-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.7), transparent);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+html.navigating .navigation-indicator {
+  opacity: 1;
+}
+
+/* Specifically fix for the issue with Manuscript button freezing */
+.safari [data-manuscript-button="true"] {
+  -webkit-tap-highlight-color: transparent;
+  transform: translateZ(0);
+  transition: opacity 0.2s ease !important;
+}
+
+.safari [data-manuscript-button="true"]:active {
+  opacity: 0.7 !important;
+  transform: none !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Prevent multiple clicks on navigation buttons */
+button.navigating,
+a.navigating {
+  pointer-events: none !important;
+  cursor: progress !important;
+  opacity: 0.7 !important;
+}
+
+/* Fix Safari's handling of backdrops during scroll */
+@supports (-webkit-backdrop-filter: none) {
+  body.scrolling .backdrop-blur-md,
+  body.scrolling .backdrop-blur-sm {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* Improve performance when scrolling in Safari */
+body.scrolling * {
+  transition-property: none !important;
+  animation-duration: 0s !important;
+}
+
+/* Improved button styles for Safari */
+.safari button,
+.safari [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
+/* Prevent layout shifts during navigation in Safari */
+.safari html.navigating .min-h-screen {
+  min-height: 100vh !important;
+  height: 100vh !important;
+  position: fixed;
+  width: 100%;
 }
